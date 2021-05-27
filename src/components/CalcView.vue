@@ -1,33 +1,81 @@
 <template>
   <div class="calculator">
-    <div class="result"></div>
+    <div class="result"> {{ valueDisplayed }} </div>
 
     <div class="pad">
-      <button class="clear">C</button>
-      <button>/</button>
-      <button>7</button>
-      <button>8</button>
-      <button>9</button>
-      <button>x</button>
-      <button>4</button>
-      <button>5</button>
-      <button>6</button>
-      <button>-</button>
-      <button>1</button>
-      <button>2</button>
-      <button>3</button>
-      <button>+</button>
-      <button class="zero">0</button>
-      <button class="equal">=</button>
+      <button class="clear" @click="clear">C</button>
+      <button @click="handleOp('/')">/</button>
+      <button @click="handleDigit(7)">7</button>
+      <button @click="handleDigit(8)">8</button>
+      <button @click="handleDigit(9)">9</button>
+      <button @click="handleOp('x')">x</button>
+      <button @click="handleDigit(4)">4</button>
+      <button @click="handleDigit(5)">5</button>
+      <button @click="handleDigit(6)">6</button>
+      <button @click="handleOp('-')">-</button>
+      <button @click="handleDigit(1)">1</button>
+      <button @click="handleDigit(2)">2</button>
+      <button @click="handleDigit(3)">3</button>
+      <button @click="handleOp('+')">+</button>
+      <button class="zero" @click="handleDigit(0)">0</button>
+      <button class="equal" @click="handleOp('=')">=</button>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
+  name: 'CalcView',
+
+  data: () => ({
+    currentValue: 0,
+    savedValue: null,
+    currentOp: false
+  }),
+
+  methods: {
+    clear () {
+      this.currentValue = 0
+      this.savedValue = null
+      this.currentOp = false
+    },
+    handleDigit (digit) {
+      this.currentValue = this.currentValue * 10 + digit
+    },
+    handleOp (op) {
+      if (this.currentOp && this.currentValue) {
+        this.process()
+      } else {
+        this.savedValue = this.currentValue
+      }
+
+      this.currentValue = 0
+      this.currentOp = op
+    },
+    process () {
+      if (this.currentOp === '+') {
+        this.savedValue += this.currentValue
+      } else if (this.currentOp === '-') {
+        this.savedValue -= this.currentValue
+      } else if (this.currentOp === 'x') {
+        this.savedValue *= this.currentValue
+      } else if (this.currentOp === '/') {
+        this.savedValue /= this.currentValue
+      } else if (this.currentOp === '=' && this.currentValue) {
+        this.savedValue = this.currentValue
+      }
+      this.currentValue = 0
+      this.currentOp = false
+    }
+  },
+  computed: {
+    valueDisplayed () {
+      if (this.savedValue) {
+        return this.currentValue ? this.currentValue : this.savedValue
+      } else {
+        return this.currentValue
+      }
+    }
   }
 }
 </script>
